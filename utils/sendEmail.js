@@ -1,27 +1,29 @@
-// utils/sendEmail.js
 const nodemailer = require("nodemailer");
+require("dotenv").config();
 
-const sendEmail = async (subject, htmlMessage) => {
+const sendEmail = async (subject, htmlContent) => {
   try {
     const transporter = nodemailer.createTransport({
-      service: "gmail", // or "outlook", "yahoo", etc.
+      host: "smtp.gmail.com",
+      port: 465, // secure port
+      secure: true,
       auth: {
         user: process.env.ADMIN_EMAIL,
-        pass: process.env.ADMIN_EMAIL_PASS, // app password, not your real Gmail password
+        pass: process.env.ADMIN_EMAIL_PASS,
       },
     });
 
-    const mailOptions = {
-      from: process.env.ADMIN_EMAIL,
-      to: process.env.ADMIN_EMAIL, // admin gets the email
+    const info = await transporter.sendMail({
+      from: `"Father Blessed Charity" <${process.env.ADMIN_EMAIL}>`,
+      to: process.env.ADMIN_EMAIL,
       subject,
-      html: htmlMessage,
-    };
+      html: htmlContent,
+    });
 
-    await transporter.sendMail(mailOptions);
-    console.log("✅ Email sent successfully!");
+    console.log("✅ Email sent:", info.messageId);
+    return info;
   } catch (error) {
-    console.error("❌ Email sending failed:", error.message);
+    console.error("❌ Email sending failed:", error);
     throw new Error("Email sending failed");
   }
 };
