@@ -32,7 +32,7 @@ router.post("/", async (req, res) => {
         description: "Thank you for supporting our mission 🙏",
       },
     };
-
+    console.log("📦 Sending to Chapa:", data)
     // Send request to Chapa API
     const response = await axios.post(
       "https://api.chapa.co/v1/transaction/initialize",
@@ -77,7 +77,12 @@ router.post("/", async (req, res) => {
     });
   } catch (error) {
     console.error("Payment initialization error:", error.response?.data || error.message);
-    res.status(500).json({ error: "Payment initialization failed" });
+  
+    // ✅ This sends Chapa’s detailed error to Postman so we can see the exact reason
+    res.status(500).json({
+      error: "Payment initialization failed",
+      details: error.response?.data || error.message
+    });
   }
 });
 
